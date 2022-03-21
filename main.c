@@ -29,7 +29,7 @@ void printL(int len, int *list) {
 int fanint(int n) {
   int o = 0;
   for (int i = 0; i < cell_s; i++) {
-    o |= ((i / (n + 1)) % 2) << i;
+    o |= ((i / (1 << (n))) % 2) << i;
   }
   return o;
 }
@@ -46,8 +46,9 @@ int get(uint64_t in, int ind) { return (in >> (ind * cell_s)) & filw1(cell_s); }
 
 uint64_t init() {
   uint64_t o = 0;
-  for (int i = 0; i < cells; i++)
+  for (int i = 0; i < cells; i++) {
     o = set(o, i, fanint(i));
+  }
   return o;
 }
 
@@ -152,6 +153,7 @@ int main() {
   char *def = malloc(sizeof(char));
   strcpy(def, "");
   rez[init()] = def;
+  fprintf(stderr, "%ld\n", init());
 
   pthread_t niti[THREADS];
 
@@ -179,7 +181,7 @@ int main() {
   int najd = 0;
   for (int i = 0; i < 1 << (cells * cell_s); i++) {
     if (rez[i]) {
-      printf("%#x:%s\n", i, rez[i]);
+      printf("%#08x:%s\n", i, rez[i]);
       free(rez[i]);
       najd++;
     }
