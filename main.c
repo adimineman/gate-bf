@@ -5,9 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
-#define THREADS 2
+#define THREADS 16
 #define cells 3
 
 int cell_s;
@@ -60,58 +59,6 @@ uint64_t effect(uint64_t state, int a, int b, int c) {
                 : nand(get(state, a), get(state, b)));
   return state;
 }
-
-/*int gate(int len) {
-  if (len) {
-    int *arg = calloc(len * 2, sizeof(int));
-    int be = 2;
-    int i = 0;
-    int new = 0;
-    uint64_t citer = 0;
-    clock_t start = clock();
-    while (be) {
-      if (citer % 100000000 == 1)
-        fprintf(stderr, "\t%f\n",
-                (double)((clock() - start) *
-                         (pow(cells, (double)len * 2) - citer)) /
-                    citer / CLOCKS_PER_SEC);
-      if (be == 1)
-        arg[i]++;
-      else
-        be = 1;
-      if (arg[i] >= cells) {
-        arg[i] = 0;
-        i++;
-        if (i >= len * 2)
-          be = 0;
-      } else {
-        citer++;
-        i = 0;
-        uint64_t eff = effect(len * 2, arg);
-        if (rez[eff] == 0) {
-          char *tmp = calloc(len * 2, sizeof(char));
-          for (int a = 0; a < len * 2; a++) {
-            tmp[a] = (char)arg[a] + '0';
-          }
-          rez[eff] = tmp;
-          // printf("%s %lx\n",tmp,eff);
-          new = 1;
-        } else
-          continue;
-      }
-    }
-    free(arg);
-    return new;
-  } else {
-    uint64_t eff = init();
-    if (rez[eff] == 0) {
-      char *tmp = calloc(2, sizeof(char));
-      tmp[0] = '-';
-      return 1;
-    }
-    return 0;
-  }
-}*/
 
 void *gate(void *in) {
   job_t *arg = in;
@@ -176,8 +123,6 @@ int main() {
     fprintf(stderr, "%d\n", j++);
   }
 
-  /*while (gate(j))
-    fprintf(stderr, "%d\n", j++);*/
   int najd = 0;
   for (int i = 0; i < 1 << (cells * cell_s); i++) {
     if (rez[i]) {
