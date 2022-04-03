@@ -52,10 +52,11 @@ uint64_t init() {
 }
 
 int nand(int x, int y) { return (~(x & y)) & filw1(cell_s); }
+int bxor(int x, int y){return (x^y)&filw1(cell_s);}
 
 uint64_t effect(uint64_t state, int a, int b, int c) {
   state = set(state, b,
-              c ? get(state, a) ^ get(state, b)
+              c ? bxor(get(state, a), get(state, b))
                 : nand(get(state, a), get(state, b)));
   return state;
 }
@@ -71,12 +72,12 @@ void *gate(void *in) {
           for (int m = 0; m < 2; m++) {
             uint64_t eff = effect(poz, x, y, m);
             if (rez[eff] == 0) {
-              pthread_mutex_lock(&rezL);
               char *tmp = calloc(3 * arg->len + 1, sizeof(char));
               strncpy(tmp, rez[poz], (arg->len - 1) * 3);
-              tmp[arg->len * 3 - 3] = '0' + x;
-              tmp[arg->len * 3 - 2] = '0' + y;
-              tmp[arg->len * 3 - 1] = '0' + m;
+              tmp[arg->len * 3 - 3] = m?'x':'a';
+              tmp[arg->len * 3 - 2] = '0' + x;
+              tmp[arg->len * 3 - 1] = '0' + y;
+              pthread_mutex_lock(&rezL);
               rez[eff] = tmp;
               pthread_mutex_unlock(&rezL);
             }
